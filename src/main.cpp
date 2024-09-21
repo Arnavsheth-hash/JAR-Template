@@ -238,9 +238,19 @@ bool armPathUp;
 bool shiftMode;
 bool shiftLastPressed;
 bool armLoad;
-bbol
+bool ptoToggle;
+bool ptoLastPressed;
 
-
+void intakeControl(void) {
+  while(true) {
+    if (ringToggle) {
+    intake.spinToPosition(intake.position(degrees)-55, degrees, 100, rpm, true);
+    intake.spinToPosition(intake.position(degrees)+180, degrees, 100, rpm, true);
+    ringToggle = false;
+  }
+  task::sleep(20);
+  }
+}
 void usercontrol(void) {
   // User control code here, inside the loop
   clampToggle = false;
@@ -252,12 +262,15 @@ void usercontrol(void) {
   armSecondToggle = false;
   armPathUp = false;
   armLoad = false;
-  pos = 0;
+  ptoToggle = false;
+  ptoLastPressed = false;
 
   // reset arm position
   arm.resetPosition();
 
   arm.spinToPosition(15, degrees, 100, rpm, true);
+
+  thread intakeThread(intakeControl);
 
 
   while (1) {
@@ -277,17 +290,15 @@ void usercontrol(void) {
 
 
 
-
-
     if (controller1.ButtonL1.pressing() && controller1.ButtonDown.pressing()) {
       if (ringDistance.objectDistance(inches) < 3) {
-        ringToggle = !ringToggle;
+        ringToggle = true;
       }
-      ptoLastPressed = ringDistance.objectDistance(inches) < 3;
-
-
+      else if (ringToggle == false) {
+        intake.spin(reverse, 11, voltageUnits::volt);
+      }
     }
-    else if (controller1.ButtonL1.pressing()) {
+    else if (controller1.ButtonL1.pressing() && !ringToggle) {
       intake.spin(reverse, 11, voltageUnits::volt);
 
     }
