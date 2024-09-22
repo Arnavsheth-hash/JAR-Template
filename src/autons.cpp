@@ -10,15 +10,16 @@
 
 void default_constants(){
   // Each constant set is in the form of (maxVoltage, kP, kI, kD, startI).
-  chassis.set_drive_constants(10, 1.5, 0, 10, 0);
-  chassis.set_heading_constants(6, .4, 0, 1, 0);
-  chassis.set_turn_constants(12, .4, .03, 3, 15);
-  chassis.set_swing_constants(12, .3, .001, 2, 15);
+  chassis.set_drive_constants(12, 0.5, 0, 0, 0);
+  chassis.set_heading_constants(12, .4, 0, 1, 0);
+  chassis.set_turn_constants(12, .125, 0, 0, 0);
+  // Per Degree  (180, 0,62525) (90, 0.0825)(45, 0.125)
+  chassis.set_swing_constants(12, .3, 0, 0, 0);
 
   // Each exit condition set is in the form of (settle_error, settle_time, timeout).
-  chassis.set_drive_exit_conditions(1.5, 300, 5000);
-  chassis.set_turn_exit_conditions(1, 300, 3000);
-  chassis.set_swing_exit_conditions(1, 300, 3000);
+  chassis.set_drive_exit_conditions(1.5, 75, 1500);
+  chassis.set_turn_exit_conditions(5, 75, 1500);
+  chassis.set_swing_exit_conditions(1, 75, 1500);
 }
 
 /**
@@ -30,21 +31,41 @@ void default_constants(){
 void odom_constants(){
   default_constants();
   chassis.heading_max_voltage = 10;
-  chassis.drive_max_voltage = 8;
+  chassis.drive_max_voltage = 12;
   chassis.drive_settle_error = 3;
   chassis.boomerang_lead = .5;
   chassis.drive_min_voltage = 0;
 }
 
+bool taskComplete = false;
+void moveIntake() {
+  intake.spinToPosition(intake.position(degrees)- 360 * 10, degrees, 600, rpm, true);
+  taskComplete = true;
+}
+int count = 0;
+int interval = 0;
+void red_leftside() {
+  arm.spinFor(20, degrees);
+  thread intakeThread(moveIntake);
+  chassis.drive_distance(5);
+  chassis.drive_distance(6);
+  while (ringDistance.objectDistance(inches) > 1 && taskComplete) {
+    intake.spin(reverse, 8, voltageUnits::volt);
+  }
+  while (ringDistance.objectDistance(inches) < 1) {
+    intake.spin(reverse, 8, voltageUnits::volt);
+  }
+    intake.spin(reverse, 0, voltageUnits::volt);
+
+
+}
 /**
  * The expected behavior is to return to the start position.
  */
 
 void drive_test(){
-  chassis.drive_distance(6);
-  chassis.drive_distance(12);
-  chassis.drive_distance(18);
-  chassis.drive_distance(-36);
+  default_constants();
+  chassis.turn_to_angle(45);
 }
 
 /**
@@ -74,15 +95,10 @@ void swing_test(){
 
 void full_test(){
   chassis.drive_distance(24);
-  chassis.turn_to_angle(-45);
-  chassis.drive_distance(-36);
-  chassis.right_swing_to_angle(-90);
-  chassis.drive_distance(24);
-  chassis.turn_to_angle(0);
 }
 
 /**
- * Doesn't drive the robot, but just prints coordinates to the Brain screen 
+ * Doesn't drive the robot, but just prints coordinates to the Brain screen
  * so you can check if they are accurate to life. Push the robot around and
  * see if the coordinates increase like you'd expect.
  */
