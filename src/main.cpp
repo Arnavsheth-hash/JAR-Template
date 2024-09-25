@@ -133,6 +133,10 @@ bool auto_started = false;
  */
 
 void pre_auton() {
+  imu.calibrate();
+  while(imu.isCalibrating()) {
+    wait(100, msec);
+  }
   // Initializing Robot Configuration. DO NOT REMOVE!
   vexcodeInit();
   default_constants();
@@ -232,7 +236,6 @@ void autonomous(void) {
 bool clampToggle;
 bool clampLastPressed;
 bool ringToggle;
-bool ringLastPressed;
 bool armSecondToggle;
 bool armPathUp;
 bool shiftMode;
@@ -257,7 +260,6 @@ void usercontrol(void) {
   clampLastPressed = false;
 
   ringToggle = false;
-  ringLastPressed = false;
 
   armSecondToggle = false;
   armPathUp = false;
@@ -267,8 +269,6 @@ void usercontrol(void) {
 
   // reset arm position
   arm.resetPosition();
-
-  arm.spinToPosition(15, degrees, 100, rpm, true);
 
   thread intakeThread(intakeControl);
 
@@ -309,6 +309,29 @@ void usercontrol(void) {
       intake.stop(coast);
     }
 
+    if (controller1.ButtonR1.pressing()) {
+      arm.spinToPosition(ARM_MAX, degrees, 100, rpm, false);
+      armPathUp = true;
+    }
+    else if (controller1.ButtonR2.pressing()) {
+      arm.spinToPosition(0, degrees, 100, rpm, false);
+      armPathUp = false;
+      }
+    else {
+      arm.stop(hold);
+    }
+    if (arm.position(degrees) > ARM_MAX / 2 - 60 && !armSecondToggle && armPathUp) {
+        armSecond.set(true);
+        armSecondToggle = true;
+      }
+    if (arm.position(degrees) > ARM_MAX - 10 && armPathUp) {
+        armSecondToggle = false;
+        armSecond.set(false);
+      }
+    if (arm.position(degrees) < ARM_MAX / 2 && armSecondToggle && !armPathUp) {
+        armSecond.set(false);
+        armSecondToggle = false;
+       }
 
 
     if (controller1.ButtonA.pressing() && !clampLastPressed) {

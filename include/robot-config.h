@@ -25,6 +25,10 @@ extern digital_out pto;
 extern digital_out armSecond;
 
 extern distance ringDistance;
+
+extern limit ringLimit;
+
+extern inertial imu;
 //Add your devices below, and don't forget to do the same in robot-config.cpp:
 
 

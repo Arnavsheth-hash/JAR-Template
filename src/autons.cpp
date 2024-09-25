@@ -10,14 +10,14 @@
 
 void default_constants(){
   // Each constant set is in the form of (maxVoltage, kP, kI, kD, startI).
-  chassis.set_drive_constants(12, 0.5, 0, 0, 0);
-  chassis.set_heading_constants(12, .4, 0, 1, 0);
+  chassis.set_drive_constants(12, 0.52, 0, 0, 0);
+  chassis.set_heading_constants(12, .155, 0, 0, 0);
   chassis.set_turn_constants(12, .125, 0, 0, 0);
-  // Per Degree  (180, 0,62525) (90, 0.0825)(45, 0.125)
+  // Per Degree  (180, 0.62525) (90, 0.0825)(45, 0.125)
   chassis.set_swing_constants(12, .3, 0, 0, 0);
 
   // Each exit condition set is in the form of (settle_error, settle_time, timeout).
-  chassis.set_drive_exit_conditions(1.5, 75, 1500);
+  chassis.set_drive_exit_conditions(1, 75, 1500);
   chassis.set_turn_exit_conditions(5, 75, 1500);
   chassis.set_swing_exit_conditions(1, 75, 1500);
 }
@@ -32,30 +32,62 @@ void odom_constants(){
   default_constants();
   chassis.heading_max_voltage = 10;
   chassis.drive_max_voltage = 12;
-  chassis.drive_settle_error = 3;
-  chassis.boomerang_lead = .5;
-  chassis.drive_min_voltage = 0;
+  //chassis.boomerang_lead = .5;
+  //chassis.drive_min_voltage = 0;
 }
 
 bool taskComplete = false;
+
+bool ringSensed = false;
+bool ringLastPressed = false;
+
+void ringSensor() {
+  while(true) {
+    if (ringLimit.pressing() && !ringLastPressed) {
+      ringSensed = !ringSensed;
+    }
+    ringLastPressed = ringLimit.pressing();
+    task::sleep(20);
+  }
+}
+bool intakeComplete = false;
 void moveIntake() {
   intake.spinToPosition(intake.position(degrees)- 360 * 10, degrees, 600, rpm, true);
-  taskComplete = true;
+  intakeComplete = true;
 }
 int count = 0;
 int interval = 0;
+bool firstRing = false;
 void red_leftside() {
-  arm.spinFor(20, degrees);
-  thread intakeThread(moveIntake);
-  chassis.drive_distance(5);
-  chassis.drive_distance(6);
-  while (ringDistance.objectDistance(inches) > 1 && taskComplete) {
-    intake.spin(reverse, 8, voltageUnits::volt);
-  }
-  while (ringDistance.objectDistance(inches) < 1) {
-    intake.spin(reverse, 8, voltageUnits::volt);
-  }
-    intake.spin(reverse, 0, voltageUnits::volt);
+  odom_constants();
+   chassis.set_turn_exit_conditions(6, 75, 1500);
+   chassis.set_turn_constants(12, .125, 0, 0, 0);
+   chassis.set_coordinates(0, 0, 0);
+   arm.spinToPosition(20, degrees, 100, rpm, true);
+   arm.stop(hold);
+   chassis.turn_to_point(28, 24);
+   intake.spin(reverse, 11, voltageUnits::volt);
+   thread intakeThread(moveIntake);
+   chassis.drive_distance(6);
+   chassis.drive_distance(8);
+   while(!intakeComplete) {
+     wait(1, msec);
+   }
+   thread sensorThread(ringSensor);
+   while(!ringSensed) {
+     intake.spin(reverse, 11, voltageUnits::volt);
+     task::sleep(20);
+   }
+   intake.stop(hold);
+   chassis.turn_to_point(9, -24, 180);
+   odom_constants();
+  /* SCORE ON ALLIANCE STAKE ABOVE*/
+  // chassis.turn_to_point(-11, 21, 180);
+  // chassis.drive_distance(-25);
+  // chassis.drive_distance(-6);
+  // wait(300,msec);
+  // clampA.set(true);
+  // clampB.set(true);
 
 
 }
