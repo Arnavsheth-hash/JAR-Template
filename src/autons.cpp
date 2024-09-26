@@ -1,4 +1,5 @@
 #include "vex.h"
+const int ARM_MAX = 600;
 
 /**
  * Resets the constants for auton movement.
@@ -13,11 +14,11 @@ void default_constants(){
   chassis.set_drive_constants(12, 0.52, 0, 0, 0);
   chassis.set_heading_constants(12, .155, 0, 0, 0);
   chassis.set_turn_constants(12, .125, 0, 0, 0);
-  // Per Degree  (180, 0.62525) (90, 0.0825)(45, 0.125)
-  chassis.set_swing_constants(12, .3, 0, 0, 0);
+  // Per Degree  (180, 0.62525) (90, .075)(45, 0.125)
+  chassis.set_swing_constants(12, .175 , 0, 0, 0);
 
   // Each exit condition set is in the form of (settle_error, settle_time, timeout).
-  chassis.set_drive_exit_conditions(1, 75, 1500);
+  chassis.set_drive_exit_conditions(1, 75, 2000);
   chassis.set_turn_exit_conditions(5, 75, 1500);
   chassis.set_swing_exit_conditions(1, 75, 1500);
 }
@@ -60,34 +61,44 @@ int interval = 0;
 bool firstRing = false;
 void red_leftside() {
   odom_constants();
-   chassis.set_turn_exit_conditions(6, 75, 1500);
-   chassis.set_turn_constants(12, .125, 0, 0, 0);
-   chassis.set_coordinates(0, 0, 0);
+  chassis.set_coordinates(0, 0, 0);
+  chassis.set_turn_constants(12, .075, 0, 0, 0);
+   arm.spinToPosition(ARM_MAX / 2 - 60, degrees, 100, rpm, false);
+   // Move the arm up so intake doesnt hit
    arm.spinToPosition(20, degrees, 100, rpm, true);
    arm.stop(hold);
-   chassis.turn_to_point(28, 24);
-   intake.spin(reverse, 11, voltageUnits::volt);
-   thread intakeThread(moveIntake);
-   chassis.drive_distance(6);
-   chassis.drive_distance(8);
-   while(!intakeComplete) {
-     wait(1, msec);
-   }
-   thread sensorThread(ringSensor);
-   while(!ringSensed) {
-     intake.spin(reverse, 11, voltageUnits::volt);
-     task::sleep(20);
-   }
-   intake.stop(hold);
-   chassis.turn_to_point(9, -24, 180);
-   odom_constants();
-  /* SCORE ON ALLIANCE STAKE ABOVE*/
-  // chassis.turn_to_point(-11, 21, 180);
-  // chassis.drive_distance(-25);
-  // chassis.drive_distance(-6);
-  // wait(300,msec);
-  // clampA.set(true);
-  // clampB.set(true);
+
+   chassis.drive_distance(15);
+    chassis.turn_to_angle(-90);
+    chassis.drive_distance(3);
+    armSecond.set(true);
+    arm.spinToPosition(ARM_MAX - 120, degrees, 100, rpm, true);
+    chassis.drive_distance(-4);
+    arm.spinToPosition(ARM_MAX- 55, degrees, 100, rpm, true);
+    armSecond.set(false);
+    wait(200, msec);
+
+    chassis.drive_distance(7);
+    arm.spinToPosition(20, degrees, 100, rpm, false);
+    Brain.Screen.clearScreen();
+    Brain.Screen.printAt(5,20, "X: %f", chassis.get_X_position());
+    Brain.Screen.printAt(5,40, "Y: %f", chassis.get_Y_position());
+    chassis.turn_to_angle(0);
+    chassis.drive_distance(-7);
+    chassis.set_turn_constants(12, .085, 0, 0, 0);
+    chassis.turn_to_angle(60);
+    Brain.Screen.printAt(5,60, "Heading: %f", chassis.get_absolute_heading());
+    chassis.drive_distance(-24);
+    chassis.drive_distance(-4);
+    clampA.set(true);
+    clampB.set(true);
+
+
+
+    //chassis.turn_to_angle(0);
+
+
+
 
 
 }
