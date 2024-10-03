@@ -5,7 +5,7 @@
  * Even though there's only one constructor, there can be
  * huge differences in implementation depending on the drive style
  * selected.
- * 
+ *
  * @param drive_setup The style of drive, such as TANK_TWO_ROTATION.
  * @param DriveL Left motor group.
  * @param DriveR Right motor group.
@@ -25,10 +25,10 @@
  * @param SidewaysTracker_center_distance Vertical distance in inches.
  */
 
-Drive::Drive(enum::drive_setup drive_setup, motor_group DriveL, motor_group DriveR, 
-int gyro_port, float wheel_diameter, float wheel_ratio, float gyro_scale, 
-int DriveLF_port, int DriveRF_port, int DriveLB_port, int DriveRB_port, 
-int ForwardTracker_port, float ForwardTracker_diameter, float ForwardTracker_center_distance, 
+Drive::Drive(enum::drive_setup drive_setup, motor_group DriveL, motor_group DriveR,
+int gyro_port, float wheel_diameter, float wheel_ratio, float gyro_scale,
+int DriveLF_port, int DriveRF_port, int DriveLB_port, int DriveRB_port,
+int ForwardTracker_port, float ForwardTracker_diameter, float ForwardTracker_center_distance,
 int SidewaysTracker_port, float SidewaysTracker_diameter, float SidewaysTracker_center_distance) :
   wheel_diameter(wheel_diameter),
   wheel_ratio(wheel_ratio),
@@ -55,8 +55,8 @@ int SidewaysTracker_port, float SidewaysTracker_diameter, float SidewaysTracker_
 {
     if (drive_setup == TANK_ONE_FORWARD_ENCODER || drive_setup == TANK_ONE_FORWARD_ROTATION || drive_setup == ZERO_TRACKER_ODOM){
       odom.set_physical_distances(ForwardTracker_center_distance, 0);
-    } 
-    if (drive_setup == TANK_ONE_SIDEWAYS_ENCODER || drive_setup == TANK_ONE_SIDEWAYS_ROTATION || 
+    }
+    if (drive_setup == TANK_ONE_SIDEWAYS_ENCODER || drive_setup == TANK_ONE_SIDEWAYS_ROTATION ||
     drive_setup == TANK_TWO_ENCODER || drive_setup == TANK_TWO_ROTATION ||
     drive_setup == HOLONOMIC_TWO_ENCODER || drive_setup == HOLONOMIC_TWO_ROTATION){
       odom.set_physical_distances(ForwardTracker_center_distance, SidewaysTracker_center_distance);
@@ -65,7 +65,7 @@ int SidewaysTracker_port, float SidewaysTracker_diameter, float SidewaysTracker_
 
 /**
  * Drives each side of the chassis at the specified voltage.
- * 
+ *
  * @param leftVoltage Voltage out of 12.
  * @param rightVoltage Voltage out of 12.
  */
@@ -78,7 +78,7 @@ void Drive::drive_with_voltage(float leftVoltage, float rightVoltage){
 /**
  * Resets default turn constants.
  * Turning includes turn_to_angle() and turn_to_point().
- * 
+ *
  * @param turn_max_voltage Max voltage out of 12.
  * @param turn_kp Proportional constant.
  * @param turn_ki Integral constant.
@@ -92,13 +92,13 @@ void Drive::set_turn_constants(float turn_max_voltage, float turn_kp, float turn
   this->turn_ki = turn_ki;
   this->turn_kd = turn_kd;
   this->turn_starti = turn_starti;
-} 
+}
 
 /**
  * Resets default drive constants.
  * Driving includes drive_distance(), drive_to_point(), and
  * holonomic_drive_to_point().
- * 
+ *
  * @param drive_max_voltage Max voltage out of 12.
  * @param drive_kp Proportional constant.
  * @param drive_ki Integral constant.
@@ -112,14 +112,14 @@ void Drive::set_drive_constants(float drive_max_voltage, float drive_kp, float d
   this->drive_ki = drive_ki;
   this->drive_kd = drive_kd;
   this->drive_starti = drive_starti;
-} 
+}
 
 /**
  * Resets default heading constants.
  * Heading control keeps the robot facing the right direction
  * and is part of drive_distance(), drive_to_point(), and
  * holonomic_drive_to_point.
- * 
+ *
  * @param heading_max_voltage Max voltage out of 12.
  * @param heading_kp Proportional constant.
  * @param heading_ki Integral constant.
@@ -139,7 +139,7 @@ void Drive::set_heading_constants(float heading_max_voltage, float heading_kp, f
  * Resets default swing constants.
  * Swing control holds one side of the drive still and turns with the other.
  * Only left_swing_to_angle() and right_swing_to_angle() use these constants.
- * 
+ *
  * @param swing_max_voltage Max voltage out of 12.
  * @param swing_kp Proportional constant.
  * @param swing_ki Integral constant.
@@ -153,13 +153,13 @@ void Drive::set_swing_constants(float swing_max_voltage, float swing_kp, float s
   this->swing_ki = swing_ki;
   this->swing_kd = swing_kd;
   this->swing_starti = swing_starti;
-} 
+}
 
 /**
  * Resets default turn exit conditions.
- * The robot exits when error is less than settle_error for a duration of settle_time, 
+ * The robot exits when error is less than settle_error for a duration of settle_time,
  * or if the function has gone on for longer than timeout.
- * 
+ *
  * @param turn_settle_error Error to be considered settled in degrees.
  * @param turn_settle_time Time to be considered settled in milliseconds.
  * @param turn_timeout Time before quitting and move on in milliseconds.
@@ -173,9 +173,9 @@ void Drive::set_turn_exit_conditions(float turn_settle_error, float turn_settle_
 
 /**
  * Resets default drive exit conditions.
- * The robot exits when error is less than settle_error for a duration of settle_time, 
+ * The robot exits when error is less than settle_error for a duration of settle_time,
  * or if the function has gone on for longer than timeout.
- * 
+ *
  * @param drive_settle_error Error to be considered settled in inches.
  * @param drive_settle_time Time to be considered settled in milliseconds.
  * @param drive_timeout Time before quitting and move on in milliseconds.
@@ -189,9 +189,9 @@ void Drive::set_drive_exit_conditions(float drive_settle_error, float drive_sett
 
 /**
  * Resets default swing exit conditions.
- * The robot exits when error is less than settle_error for a duration of settle_time, 
+ * The robot exits when error is less than settle_error for a duration of settle_time,
  * or if the function has gone on for longer than timeout.
- * 
+ *
  * @param swing_settle_error Error to be considered settled in degrees.
  * @param swing_settle_time Time to be considered settled in milliseconds.
  * @param swing_timeout Time before quitting and move on in milliseconds.
@@ -205,17 +205,17 @@ void Drive::set_swing_exit_conditions(float swing_settle_error, float swing_sett
 
 /**
  * Gives the drive's absolute heading with Gyro correction.
- * 
+ *
  * @return Gyro scale-corrected heading in the range [0, 360).
  */
 
-float Drive::get_absolute_heading(){ 
-  return( reduce_0_to_360( Gyro.rotation()*360.0/gyro_scale ) ); 
+float Drive::get_absolute_heading(){
+  return( reduce_0_to_360( Gyro.rotation()*360.0/gyro_scale ) );
 }
 
 /**
  * Gets the motor group's position and converts to inches.
- * 
+ *
  * @return Left position in inches.
  */
 
@@ -225,7 +225,7 @@ float Drive::get_left_position_in(){
 
 /**
  * Gets the motor group's position and converts to inches.
- * 
+ *
  * @return Right position in inches.
  */
 
@@ -235,7 +235,7 @@ float Drive::get_right_position_in(){
 
 /**
  * Stops both sides of the drive with the desired mode.
- * 
+ *
  * @param mode hold, brake, or stop
  */
 
@@ -246,9 +246,9 @@ void Drive::drive_stop(vex::brakeType mode){
 
 /**
  * Turns the robot to a field-centric angle.
- * Optimizes direction, so it turns whichever way is closer to the 
+ * Optimizes direction, so it turns whichever way is closer to the
  * current heading of the robot.
- * 
+ *
  * @param angle Desired angle in degrees.
  */
 
@@ -282,7 +282,7 @@ void Drive::turn_to_angle(float angle, float turn_max_voltage, float turn_settle
  * You can control the heading, but if you choose not to, it will drive with the
  * heading it's currently facing. It uses the average of the left and right
  * motor groups to calculate distance driven.
- * 
+ *
  * @param distance Desired distance in inches.
  * @param heading Desired heading in degrees.
  */
@@ -327,7 +327,7 @@ void Drive::drive_distance(float distance, float heading, float drive_max_voltag
  * Turns to a given angle with only one side of the drivetrain.
  * Like turn_to_angle(), is optimized for turning the shorter
  * direction.
- * 
+ *
  * @param angle Desired angle in degrees.
  */
 
@@ -365,7 +365,7 @@ void Drive::right_swing_to_angle(float angle, float swing_max_voltage, float swi
 
 /**
  * Depending on the drive style, gets the tracker's position.
- * 
+ *
  * @return The tracker position.
  */
 
@@ -382,7 +382,7 @@ float Drive::get_ForwardTracker_position(){
 
 /**
  * Depending on the drive style, gets the tracker's position.
- * 
+ *
  * @return The tracker position.
  */
 
@@ -410,9 +410,9 @@ void Drive::position_track(){
 /**
  * Resets the robot's heading.
  * For example, at the beginning of auton, if your robot starts at
- * 45 degrees, so set_heading(45) and the robot will know which way 
+ * 45 degrees, so set_heading(45) and the robot will know which way
  * it's facing.
- * 
+ *
  * @param orientation_deg Desired heading in degrees.
  */
 
@@ -424,7 +424,7 @@ void Drive::set_heading(float orientation_deg){
  * Resets the robot's coordinates and heading.
  * This is for odom-using robots to specify where the bot is at the beginning
  * of the match.
- * 
+ *
  * @param X_position Robot's x in inches.
  * @param Y_position Robot's y in inches.
  * @param orientation_deg Desired heading in degrees.
@@ -438,7 +438,7 @@ void Drive::set_coordinates(float X_position, float Y_position, float orientatio
 
 /**
  * Gets the robot's x.
- * 
+ *
  * @return The robot's x position in inches.
  */
 
@@ -448,7 +448,7 @@ float Drive::get_X_position(){
 
 /**
  * Gets the robot's y.
- * 
+ *
  * @return The robot's y position in inches.
  */
 
@@ -463,7 +463,7 @@ float Drive::get_Y_position(){
  * is the turn correction from the current heading to the desired point. Uses optimizations
  * like driving backwards whenever possible and scaling the drive output with the cosine
  * of the angle to the point.
- * 
+ *
  * @param X_position Desired x position in inches.
  * @param Y_position Desired y position in inches.
  */
@@ -499,7 +499,7 @@ void Drive::drive_to_point(float X_position, float Y_position, float drive_min_v
     drive_output*=heading_scale_factor;
     heading_error = reduce_negative_90_to_90(heading_error);
     float heading_output = headingPID.compute(heading_error);
-    
+
     if (drive_error<drive_settle_error) { heading_output = 0; }
 
     drive_output = clamp(drive_output, -fabs(heading_scale_factor)*drive_max_voltage, fabs(heading_scale_factor)*drive_max_voltage);
@@ -518,15 +518,15 @@ void Drive::drive_to_point(float X_position, float Y_position, float drive_min_v
  * by the same distance as the robot's distance to the target, times the lead. The
  * robot always tries to go to the carrot, which is constantly moving, and the
  * robot eventually gets into position. The heading correction is optimized to only
- * try to reach the correct angle when drive error is low, and the robot will drive 
- * backwards to reach a pose if it's faster. .5 is a reasonable value for the lead. 
+ * try to reach the correct angle when drive error is low, and the robot will drive
+ * backwards to reach a pose if it's faster. .5 is a reasonable value for the lead.
  * The setback parameter is used to glide into position more effectively. It is
  * the distance back from the target that the robot tries to drive to first.
- * 
+ *
  * @param X_position Desired x position in inches.
  * @param Y_position Desired y position in inches.
  * @param angle Desired orientation in degrees.
- * @param lead Constant scale factor that determines how far away the carrot point is. 
+ * @param lead Constant scale factor that determines how far away the carrot point is.
  * @param setback Distance in inches from target by which the carrot is always pushed back.
  * @param drive_min_voltage Minimum voltage on the drive, used for chaining movements.
  */
@@ -575,11 +575,11 @@ void Drive::drive_to_pose(float X_position, float Y_position, float angle, float
     float drive_error = hypot(carrot_X-get_X_position(),carrot_Y-get_Y_position());
     float heading_error = reduce_negative_180_to_180(to_deg(atan2(carrot_X-get_X_position(),carrot_Y-get_Y_position()))-get_absolute_heading());
 
-    if (drive_error<drive_settle_error || crossed_center_line || drive_error < setback) { 
-      heading_error = reduce_negative_180_to_180(angle-get_absolute_heading()); 
+    if (drive_error<drive_settle_error || crossed_center_line || drive_error < setback) {
+      heading_error = reduce_negative_180_to_180(angle-get_absolute_heading());
       drive_error = target_distance;
     }
-    
+
     float drive_output = drivePID.compute(drive_error);
 
     float heading_scale_factor = cos(to_rad(heading_error));
@@ -600,10 +600,10 @@ void Drive::drive_to_pose(float X_position, float Y_position, float angle, float
 /**
  * Turns to a specified point on the field.
  * Functions similarly to turn_to_angle() except with a point. The
- * extra_angle_deg parameter turns the robot extra relative to the 
+ * extra_angle_deg parameter turns the robot extra relative to the
  * desired target. For example, if you want the back of your robot
  * to point at (36, 42), you would run turn_to_point(36, 42, 180).
- * 
+ *
  * @param X_position Desired x position in inches.
  * @param Y_position Desired y position in inches.
  * @param extra_angle_deg Angle turned past the desired heading in degrees.
@@ -638,7 +638,7 @@ void Drive::turn_to_point(float X_position, float Y_position, float extra_angle_
  * at the same time. Optimized to turn the quicker direction and only
  * exits once both PID loops have settled. It uses the heading constants
  * for heading but the turn exit conditions to settle.
- * 
+ *
  * @param X_position Desired x position in inches.
  * @param Y_position Desired y position in inches.
  * @param angle Desired ending angle in degrees.
@@ -691,6 +691,7 @@ void Drive::holonomic_drive_to_pose(float X_position, float Y_position, float an
 void Drive::control_arcade(){
   float throttle = deadband(controller(primary).Axis3.value(), 5);
   float turn = deadband(controller(primary).Axis1.value(), 5);
+  turn = (turn >= 0) ? pow(turn, 2) / 200 : -pow(turn, 2) / 200;
   DriveL.spin(fwd, to_volt(throttle+turn), volt);
   DriveR.spin(fwd, to_volt(throttle-turn), volt);
 }

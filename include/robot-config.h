@@ -13,20 +13,14 @@ extern motor lm;
 extern motor lb;
 
 extern motor intake;
-extern motor arm;
 
 extern controller controller1;
 
 extern digital_out clampA;
 extern digital_out clampB;
 
-extern digital_out pto;
+extern digital_out arm;
 
-extern digital_out armSecond;
-
-extern distance ringDistance;
-
-extern limit ringLimit;
 
 extern inertial imu;
 //Add your devices below, and don't forget to do the same in robot-config.cpp:

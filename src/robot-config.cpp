@@ -23,17 +23,10 @@ motor lb = motor(PORT11, ratio6_1, true);
 
 motor intake = motor(PORT7, ratio6_1, false);
 
-motor arm = motor(PORT2, ratio36_1, true);
-
 digital_out clampA = digital_out(Brain.ThreeWirePort.H);
 digital_out clampB = digital_out(Brain.ThreeWirePort.G);
 
-digital_out pto = digital_out(Brain.ThreeWirePort.A);
-
-limit ringLimit = limit(Brain.ThreeWirePort.F);
-digital_out armSecond = digital_out(Brain.ThreeWirePort.E);
-
-distance ringDistance = distance(PORT8);
+digital_out arm = digital_out(Brain.ThreeWirePort.F);
 
 inertial imu = inertial(PORT12);
 

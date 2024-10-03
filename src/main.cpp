@@ -235,42 +235,22 @@ void autonomous(void) {
 
 bool clampToggle;
 bool clampLastPressed;
-bool ringToggle;
-bool armSecondToggle;
-bool armPathUp;
-bool shiftMode;
-bool shiftLastPressed;
-bool armLoad;
 bool ptoToggle;
 bool ptoLastPressed;
+bool armToggle;
+bool armLastPressed;
 
-void intakeControl(void) {
-  while(true) {
-    if (ringToggle) {
-    intake.spinToPosition(intake.position(degrees)-55, degrees, 100, rpm, true);
-    intake.spinToPosition(intake.position(degrees)+180, degrees, 100, rpm, true);
-    ringToggle = false;
-  }
-  task::sleep(20);
-  }
-}
 void usercontrol(void) {
   // User control code here, inside the loop
-  clampToggle = false;
+  clampToggle = true;
   clampLastPressed = false;
+  armToggle = false;
+  armLastPressed = false;
 
-  ringToggle = false;
 
-  armSecondToggle = false;
-  armPathUp = false;
-  armLoad = false;
-  ptoToggle = false;
-  ptoLastPressed = false;
+  clampA.set(true);
+  clampB.set(true);
 
-  // reset arm position
-  arm.resetPosition();
-
-  thread intakeThread(intakeControl);
 
 
   while (1) {
@@ -290,54 +270,23 @@ void usercontrol(void) {
 
 
 
-    if (controller1.ButtonL1.pressing() && controller1.ButtonDown.pressing()) {
-      if (ringDistance.objectDistance(inches) < 3) {
-        ringToggle = true;
-      }
-      else if (ringToggle == false) {
-        intake.spin(reverse, 11, voltageUnits::volt);
-      }
-    }
-    else if (controller1.ButtonL1.pressing() && !ringToggle) {
-      intake.spin(reverse, 11, voltageUnits::volt);
+    // intake stuff
 
+   if (controller1.ButtonL1.pressing()) {
+      intake.spin(reverse, 11, voltageUnits::volt);
     }
     else if (controller1.ButtonL2.pressing()) {
       intake.spin(forward, 11, voltageUnits::volt);
     }
     else {
-      intake.stop(coast);
+      intake.stop(hold);
     }
 
-    if (controller1.ButtonR1.pressing()) {
-      arm.spinToPosition(ARM_MAX, degrees, 100, rpm, false);
-      armPathUp = true;
-    }
-    else if (controller1.ButtonR2.pressing()) {
-      arm.spinToPosition(0, degrees, 100, rpm, false);
-      armPathUp = false;
-      }
-    else {
-      arm.stop(hold);
-    }
-    if (arm.position(degrees) > ARM_MAX / 2 - 60 && !armSecondToggle && armPathUp) {
-        armSecond.set(true);
-        armSecondToggle = true;
-      }
-    if (arm.position(degrees) > ARM_MAX - 10 && armPathUp) {
-        armSecondToggle = false;
-        armSecond.set(false);
-      }
-    if (arm.position(degrees) < ARM_MAX / 2 && armSecondToggle && !armPathUp) {
-        armSecond.set(false);
-        armSecondToggle = false;
-       }
 
-
-    if (controller1.ButtonA.pressing() && !clampLastPressed) {
+    if (controller1.ButtonB.pressing() && !clampLastPressed) {
       clampToggle = !clampToggle;
     }
-    clampLastPressed = controller1.ButtonA.pressing();
+    clampLastPressed = controller1.ButtonB.pressing();
 
     if (clampToggle) {
       clampA.set(true);
@@ -347,17 +296,15 @@ void usercontrol(void) {
       clampB.set(false);
     }
 
-    if (controller1.ButtonB.pressing() && !ptoLastPressed) {
-      ptoToggle = !ptoToggle;
+    if (controller1.ButtonDown.pressing() && !armLastPressed) {
+      armToggle = !armToggle;
     }
-    ptoLastPressed = controller1.ButtonB.pressing();
+    armLastPressed = controller1.ButtonDown.pressing();
 
-    if (ptoToggle) {
-      pto.set(true);
-      pto.set(true);
+    if (armToggle) {
+      arm.set(true);
     } else {
-      pto.set(false);
-      pto.set(false);
+      arm.set(false);
     }
 
     wait(20, msec); // Sleep the task for a short amount of time to
